@@ -2,9 +2,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import { ApplicationContext } from './app.context';
-import { Config } from './helpers/config.helper';
-import { TransformInterceptor } from './interceptors/transform.interceptor';
-import { UndefinedInterceptor } from './interceptors/undefined.interceptor';
+import { Config } from './shared/helpers/config.helper';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { UndefinedInterceptor } from './shared/interceptors/undefined.interceptor';
 
 async function bootstrap() {
   const app = await ApplicationContext();
@@ -14,15 +14,17 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalInterceptors(new UndefinedInterceptor());
-  
-  const options = new DocumentBuilder()
-    .setTitle('Product')
-    .setDescription('Simple service for products management')
-    .setVersion('1.0.0')
-    .addTag('products')
-    .build();
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document);
+
+  if (Config.getBoolean('SWAGGER_ENABLE')) {
+    const options = new DocumentBuilder()
+      .setTitle(Config.get('SWAGGER_TITLE'))
+      .setDescription(Config.get('SWAGGER_DESCRIPTION'))
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup(Config.get('SWAGGER_PATH'), app, document);
+  }
 
   await app.listen(Config.getNumber('APP_PORT'));
 }

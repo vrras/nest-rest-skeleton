@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
-import { Product } from '../models/product';
+import { Product } from '../shared/models/product';
 import { ProductService } from './product.service';
 
 @Crud({
@@ -8,7 +9,9 @@ import { ProductService } from './product.service';
     type: Product
   },
 })
+@ApiTags('Products')
 @Controller('products')
-export class ProductsController implements CrudController<Product> {
+@ApiBearerAuth()
+export class ProductController implements CrudController<Product> {
   constructor(public service: ProductService) {}
 }
