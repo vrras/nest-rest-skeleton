@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNumber, IsString, Min, MinLength } from 'class-validator';
+import { CrudValidationGroups } from '@nestjsx/crud';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+const { CREATE, UPDATE } = CrudValidationGroups;
 
 @Entity('product', { schema: 'public' })
 export class Product extends BaseEntity {
@@ -8,36 +19,42 @@ export class Product extends BaseEntity {
     type: 'bigint',
     name: 'product_id',
   })
-  id: number;
+  productId: number;
 
   @ApiProperty()
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @IsDefined({ groups: [CREATE] })
+  @IsString({ groups: [CREATE] })
+  @MinLength(2, { groups: [CREATE] })
   @Column('character varying', {
     nullable: false,
     length: 255,
     name: 'name',
   })
-  @IsDefined({ always: true })
-  @IsString({ always: true })
-  @MinLength(2, { always: true })
   name: string;
-  
+
   @ApiProperty()
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @IsDefined({ groups: [CREATE] })
+  @IsString({ groups: [CREATE] })
+  @MinLength(3, { groups: [CREATE] })
   @Column('character varying', {
     nullable: false,
     length: 255,
     name: 'sku',
   })
-  @IsDefined({ always: true })
-  @IsString({ always: true })
-  @MinLength(3, { always: true })
   sku: string;
-  
+
   @ApiProperty()
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @IsNumber()
+  @Min(0, { groups: [CREATE] })
   @Column('bigint', {
     nullable: false,
     name: 'price',
   })
-  @IsNumber()
-  @Min(0, { always: true })
   price: number;
 }

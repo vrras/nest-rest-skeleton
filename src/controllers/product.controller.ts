@@ -8,10 +8,28 @@ import { ProductService } from '../services/product.service';
   model: {
     type: Product
   },
+  params: {
+    productId: {
+      field: 'productId',
+      type: 'number',
+      primary: true,
+    },
+  },
+  routes: {
+    replaceOneBase: {
+      allowParamsOverride: true,
+    },
+    updateOneBase: {
+      allowParamsOverride: true,
+    },
+    deleteOneBase: {
+      returnDeleted: true,
+    },
+  },
 })
 @ApiTags('Products')
-@Controller('products')
 @ApiBearerAuth()
+@Controller('products')
 export class ProductController implements CrudController<Product> {
   constructor(public service: ProductService) {}
 }
